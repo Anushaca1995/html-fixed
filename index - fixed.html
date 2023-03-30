@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Test - To do list </title>
+</head>
+<body>
+<div id="yourname" class="yourname">
+	<div id="insurance" class="insurance">Please enter a name</div>
+	<div id="yourname-header" class="yourname-header">
+		<input type="text" id="input-name" placeholder="Enter a name">
+		<button id="add-name-btn"><i class="plus-icon"></i>
+		</button>
+	</div>
+	<div class="yourname-body">
+		<ul id="names"></ul>
+		<p id="del-rec"></p>
+	</div>
+</div>
+
+  <script>
+	  (function() {
+		'use strict';
+		var yourname = {
+			init: function() {
+				this.cacheDom();
+				this.bindEvents();
+				this.evalNamelist();
+			},
+			cacheDom: function() {
+				let addName = document.getElementById("add-name-btn");
+				addName.innerHTML = "Add Name";
+				this.nameInput = document.getElementById("input-name");
+				this.addBtn = addName;
+				this.namelist = document.getElementById("names");
+				this.namelistChildren = this.namelist.children;
+				this.errorMessage = document.getElementById("insurance");
+			},
+			bindEvents: function() {
+				this.addBtn.onclick = this.addName.bind(this);
+				this.nameInput.onkeypress = this.enterKey.bind(this);
+			},
+			evalNamelist: function() {
+				var i, chkBox, delBtn;
+				//BIND CLICK EVENTS TO ELEMENTS
+				for (i = 0; i < this.namelistChildren.length; i += 1) {
+					//ADD CLICK EVENT TO CHECKBOXES
+					chkBox = this.namelistChildren[i].getElementsByTagName("input")[0];
+					chkBox.onclick = this.completeName.bind(this, this.namelistChildren[i], chkBox);
+					//ADD CLICK EVENT TO DELETE BUTTON
+					delBtn = this.namelistChildren[i].getElementsByTagName("button")[0];
+					delBtn.innerHTML = "Delete";
+					delBtn.onclick = this.delName.bind(this, i);
+				}
+				
+			},
+			render: function() {
+				var nameLi, nameChkbx, nameVal, nameBtn, nameTrsh;
+				let name;
+				//BUILD HTML
+				nameLi = document.createElement("li");
+				nameLi.setAttribute("class", "name");
+				//CHECKBOX
+				nameChkbx = document.createElement("input");
+				nameChkbx.setAttribute("type", "checkbox");
+				//USER NAME
+				nameVal = document.createTextNode((this.nameInput.value).toUpperCase());
+				//DELETE BUTTON
+				nameBtn = document.createElement("button");
+				//TRASH ICON
+				nameTrsh = document.createElement("i");
+				nameTrsh.setAttribute("class", "fa fa-trash");
+				//INSTERT TRASH CAN INTO BUTTON
+				nameBtn.appendChild(nameTrsh);
+
+				//APPEND ELEMENTS TO NAMELI
+				nameLi.appendChild(nameChkbx);
+				nameLi.appendChild(nameVal);
+				nameLi.appendChild(nameBtn);
+
+				//ADD NAME TO NAME LIST
+				this.namelist.appendChild(nameLi);
+				
+
+			}, 
+			completeName: function(i, chkBox) {
+				if (chkBox.checked) {
+					i.className = "name completed";
+				} else {
+					this.incompleteName(i);
+				}
+			},
+			incompleteName: function(i) {
+				i.className = "name";
+			},
+			enterKey: function(event) {
+				if (event.keyCode === 13 || event.which === 13) {
+					this.addName();
+				}
+			},
+			addName: function() {
+				var value = this.nameInput.value;
+				//this.errorMessage.style.display = "none";
+
+				if (value === "") {
+					this.error();
+				} else {
+					alert("Welcome "+value);
+					this.render();
+					this.nameInput.value = "";
+					this.evalNamelist();
+				}
+			},
+			delName: function(i) {
+				alert("Good Bye");
+                let current = new Date();
+				let cDate = current.getFullYear() + '-' + (current.getMonth() + 1) + '-' + current.getDate();
+				let cTime = current.getHours() + ":" + current.getMinutes() + ":" + current.getSeconds();
+				let dateTime = cDate + ' ' + cTime;
+				document.getElementById("del-rec").innerHTML = "Last Deleted Record : Name- "+(this.namelist.children[i].innerText).replace("Delete","")+", Time- "+dateTime;
+				this.namelist.children[i].remove();
+				this.evalNamelist();
+			},
+			error: function() {
+				this.errorMessage.style.display = "block";
+			}
+		};
+
+		yourname.init();
+	}());
+  </script>
+
+</body>
+</html>
